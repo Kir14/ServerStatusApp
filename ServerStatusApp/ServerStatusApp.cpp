@@ -12,7 +12,6 @@
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
-
 HWND hEdit;
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -21,7 +20,6 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void Pipes();
-
 void AppendText(HWND , LPCTSTR);
 
 
@@ -135,7 +133,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
 	case WM_CREATE:
-		hEdit = CreateWindow(L"Edit", NULL, WS_CHILD | WS_VISIBLE |
+		hEdit = CreateWindow(L"Edit", NULL, WS_CHILD | WS_VISIBLE | ES_READONLY |
 			WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
 			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
 		CreateThread(
@@ -171,7 +169,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-
             EndPaint(hWnd, &ps);
         }
         break;
@@ -304,7 +301,7 @@ void Pipes()
 
 
 
-		SetWindowText(hEdit, L"");
+		SetWindowText(hEdit, L"connect clients:\n");
 
 		char* next_token = nullptr;
 		char* pch = strtok_s(buffer, "\n", &next_token); // во втором параметре указаны разделитель (пробел, запятая, точка, тире)
