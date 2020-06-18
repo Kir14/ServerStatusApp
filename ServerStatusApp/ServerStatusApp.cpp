@@ -22,6 +22,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void Pipes();
 
+void AppendText(HWND , LPCTSTR);
+
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -105,7 +107,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 480, 620, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -133,9 +135,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
 	case WM_CREATE:
-		hEdit = CreateWindow(L"Edit", L"0", WS_CHILD | WS_VISIBLE |
-			WS_BORDER | ES_LEFT,
-			0,0,LOWORD(lParam),HIWORD(lParam), hWnd, 0, hInst, NULL);
+		hEdit = CreateWindow(L"Edit", NULL, WS_CHILD | WS_VISIBLE |
+			WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
+			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
 		CreateThread(
 			NULL,              // no security attribute 
 			0,                 // default stack size 
@@ -143,6 +145,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			NULL,    // параметр потока
 			0,                 // not suspended 
 			NULL);      // возврат id потока)
+		break;
+	case WM_SIZE:
+		MoveWindow(hEdit, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
 		break;
     case WM_COMMAND:
         {
@@ -166,6 +171,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
+
             EndPaint(hWnd, &ps);
         }
         break;
@@ -226,7 +232,7 @@ void Pipes()
 		// Не удалось открыть канал
 		if (GetLastError() != ERROR_PIPE_BUSY)
 		{
-			SetWindowText(hEdit,L"Не удалось открыть канал. GLE=%d\n");
+			SetWindowText(hEdit,L"Не удалось открыть канал\n");
 			return;
 		}
 
@@ -270,12 +276,12 @@ void Pipes()
 			system("pause");
 			return -1;
 		}*/
-		WCHAR buffer[1000] = L"Ey\0";
+		char buffer[1000] = "";
 		//Чтение ответа от сервера
 		fSuccess = ReadFile(
 			hPipe,    //  имя канала
 			buffer,    // buffer to receive reply 
-			1000,  // size of buffer 
+			1000 * sizeof(char),  // size of buffer 
 			&cbRead,  // number of bytes read 
 			NULL);    // not overlapped 
 		
@@ -283,7 +289,7 @@ void Pipes()
 
 		if (!fSuccess)
 		{
-			SetWindowText(hEdit, L"Читайте файла не удалось. GLE=%d\n");
+			SetWindowText(hEdit, L"Чтение файла не удалось\n");
 			return;
 		}
 		
@@ -295,7 +301,31 @@ void Pipes()
 		}
 		int n = _tclen(buffer);
 		buffer[n++]='\0';*/
-		SetWindowText(hEdit, buffer);
+
+
+
+		SetWindowText(hEdit, L"");
+
+		char* next_token = nullptr;
+		char* pch = strtok_s(buffer, "\n", &next_token); // во втором параметре указаны разделитель (пробел, запятая, точка, тире)
+
+		//if(pch!=NULL) AppendText(hEdit, pch);
+		while (pch != NULL)                         // пока есть лексемы
+		{
+			TCHAR buf[100]=L"";
+			MultiByteToWideChar(CP_ACP, 0, pch, 100, buf, 100);
+			wcscat_s(buf, L"\r\n");
+			AppendText(hEdit, buf);
+			pch = strtok_s(NULL, "\n", &next_token);
+			
+		}
 	}
 	CloseHandle(hPipe);
+}
+
+void AppendText(HWND hEditWnd, LPCTSTR Text)
+{
+	int idx = GetWindowTextLength(hEditWnd);
+	SendMessage(hEditWnd, EM_SETSEL, (WPARAM)idx, (LPARAM)idx);
+	SendMessage(hEditWnd, EM_REPLACESEL, 0, (LPARAM)Text);
 }
