@@ -13,6 +13,7 @@ HINSTANCE hInst;                                // текущий экземпл
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 HWND hEdit;
+HWND hBtnOn, hBtnOff, hBtnClients;
 
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -20,46 +21,46 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void Pipes();
-void AppendText(HWND , LPCTSTR);
+void AppendText(HWND, LPCTSTR);
 
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Разместите код здесь.
+	// TODO: Разместите код здесь.
 
-    // Инициализация глобальных строк
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_SERVERSTATUSAPP, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+	// Инициализация глобальных строк
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_SERVERSTATUSAPP, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
 
-    // Выполнить инициализацию приложения:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	// Выполнить инициализацию приложения:
+	if (!InitInstance(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_SERVERSTATUSAPP));
+	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_SERVERSTATUSAPP));
 
-    MSG msg;
+	MSG msg;
 
-    // Цикл основного сообщения:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
+	// Цикл основного сообщения:
+	while (GetMessage(&msg, nullptr, 0, 0))
+	{
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
 
-    return (int) msg.wParam;
+	return (int)msg.wParam;
 }
 
 
@@ -71,23 +72,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+	WNDCLASSEXW wcex;
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SERVERSTATUSAPP));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_SERVERSTATUSAPP);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SERVERSTATUSAPP));
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_SERVERSTATUSAPP);
+	wcex.lpszClassName = szWindowClass;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+	return RegisterClassExW(&wcex);
 }
 
 //
@@ -102,20 +103,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
+	hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, 480, 620, nullptr, nullptr, hInstance, nullptr);
+	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, 480, 620, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   return TRUE;
+	return TRUE;
 }
 
 //
@@ -130,75 +131,118 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
+	switch (message)
+	{
 	case WM_CREATE:
 		hEdit = CreateWindow(L"Edit", NULL, WS_CHILD | WS_VISIBLE | ES_READONLY |
 			WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
 			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
-		CreateThread(
-			NULL,              // no security attribute 
-			0,                 // default stack size 
-			(LPTHREAD_START_ROUTINE)Pipes,    // функция обработки сообщений
-			NULL,    // параметр потока
-			0,                 // not suspended 
-			NULL);      // возврат id потока)
+		hBtnOn = CreateWindow(L"Button", L"On",
+			WS_CHILD | WS_VISIBLE | WS_BORDER,
+			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
+		hBtnOff = CreateWindow(L"Button", L"Off",
+			WS_CHILD | WS_VISIBLE | WS_BORDER,
+			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
+		hBtnClients = CreateWindow(L"Button", L"Clients",
+			WS_CHILD | WS_VISIBLE | WS_BORDER,
+			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
+		
 		break;
 	case WM_SIZE:
-		MoveWindow(hEdit, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
+		MoveWindow(hEdit, 0, 100, LOWORD(lParam), HIWORD(lParam) - 100, TRUE);
+		MoveWindow(hBtnOn, LOWORD(lParam) / 2 - 100, 0, 100, 50, TRUE);
+		MoveWindow(hBtnOff, LOWORD(lParam) / 2, 0, 100, 50, TRUE);
+		MoveWindow(hBtnClients, LOWORD(lParam) / 2 - 50, 50, 100, 50, TRUE);
 		break;
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Разобрать выбор в меню:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+	case WM_COMMAND:
+	{
+		if (lParam == (LPARAM)hBtnClients)
+			CreateThread(
+				NULL,              // no security attribute 
+				0,                 // default stack size 
+				(LPTHREAD_START_ROUTINE)Pipes,    // функция обработки сообщений
+				NULL,    // параметр потока
+				0,                 // not suspended 
+				NULL);      // возврат id потока)
+
+		if (lParam == (LPARAM)hBtnOn)
+		{
+			SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT);
+			if (hSCManager == NULL)
+			{
+				AppendText(hEdit, L"Error: Can't open Manager\n");
+				return 1;
+			}
+			SC_HANDLE hService = OpenServiceA(hSCManager, "CHAT_SERVICE", SERVICE_START);
+			if (hService == NULL)
+			{
+				int error = GetLastError();
+				wchar_t buffer[100];
+				_itow_s(error, buffer, 10);
+				wcscat_s(buffer, L" Error: Can't open Service\n");
+				AppendText(hEdit, buffer);
+				
+				return 1;
+			}
+			if (!StartService(hService, 0, NULL)) {
+				CloseServiceHandle(hSCManager);
+				AppendText(hEdit,L"Error: Can't Start service\n");
+				return 1;
+			}
+			CloseServiceHandle(hService);
+			CloseServiceHandle(hSCManager);
+			AppendText(hEdit,L"Server Start\n");
+			return 0;
+		}
+		// Разобрать выбор в меню:
+		switch (LOWORD(wParam))
+		{
+		case IDM_ABOUT:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		// TODO: Добавьте сюда любой код прорисовки, использующий HDC...
+		EndPaint(hWnd, &ps);
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 // Обработчик сообщений для окна "О программе".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
 
 
@@ -209,7 +253,7 @@ void Pipes()
 	DWORD  cbRead, cbToWrite, cbWritten, dwMode;
 	//LPWSTR pipename = (LPWSTR)"\\\\.\\pipe\\Server";//Имя канала
 	WCHAR pipename[80] = L"\\\\.\\pipe\\Server";
-	
+
 	while (1)
 	{
 		hPipe = CreateFile(
@@ -229,14 +273,14 @@ void Pipes()
 		// Не удалось открыть канал
 		if (GetLastError() != ERROR_PIPE_BUSY)
 		{
-			SetWindowText(hEdit,L"Не удалось открыть канал\n");
+			SetWindowText(hEdit, L"Не удалось открыть канал\n");
 			return;
 		}
 
 		// Интервал ожидания, по ходу не работает.
 		if (!WaitNamedPipe(pipename, 20000))
 		{
-			SetWindowText(hEdit,L"Could not open pipe: 20 second wait timed out.");
+			SetWindowText(hEdit, L"Could not open pipe: 20 second wait timed out.");
 			return;
 		}
 	}
@@ -251,21 +295,21 @@ void Pipes()
 	if (!fSuccess)
 	{
 		SetWindowText(hEdit, L"SetNamedPipeHandleState failed. GLE=%d\n");
-		return ;
+		return;
 	}
 
 	// Отправка сообщений серверу
 	for (;;)
 	{
-		
+
 
 		/*//Запись в канал
 		fSuccess = WriteFile(
 			hPipe,                  // имя канала
-			lpvMessage.c_str(),             // message 
-			cbToWrite,              // message length 
-			&cbWritten,             // bytes written 
-			NULL);                  // not overlapped 
+			lpvMessage.c_str(),             // message
+			cbToWrite,              // message length
+			&cbWritten,             // bytes written
+			NULL);                  // not overlapped
 
 		if (!fSuccess)
 		{
@@ -281,7 +325,7 @@ void Pipes()
 			1000 * sizeof(char),  // size of buffer 
 			&cbRead,  // number of bytes read 
 			NULL);    // not overlapped 
-		
+
 
 
 		if (!fSuccess)
@@ -289,7 +333,7 @@ void Pipes()
 			SetWindowText(hEdit, L"Чтение файла не удалось\n");
 			return;
 		}
-		
+
 		/*for (auto it : names)
 		{
 			TCHAR buf[100];
@@ -309,12 +353,12 @@ void Pipes()
 		//if(pch!=NULL) AppendText(hEdit, pch);
 		while (pch != NULL)                         // пока есть лексемы
 		{
-			TCHAR buf[100]=L"";
+			TCHAR buf[100] = L"";
 			MultiByteToWideChar(CP_ACP, 0, pch, 100, buf, 100);
 			wcscat_s(buf, L"\r\n");
 			AppendText(hEdit, buf);
 			pch = strtok_s(NULL, "\n", &next_token);
-			
+
 		}
 	}
 	CloseHandle(hPipe);
