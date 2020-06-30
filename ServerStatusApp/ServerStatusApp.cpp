@@ -137,22 +137,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hEdit = CreateWindow(L"Edit", NULL, WS_CHILD | WS_VISIBLE | ES_READONLY |
 			WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
 			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
-		hBtnOn = CreateWindow(L"Button", L"On",
-			WS_CHILD | WS_VISIBLE | WS_BORDER,
-			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
-		hBtnOff = CreateWindow(L"Button", L"Off",
-			WS_CHILD | WS_VISIBLE | WS_BORDER,
-			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
 		hBtnClients = CreateWindow(L"Button", L"Clients",
 			WS_CHILD | WS_VISIBLE | WS_BORDER,
 			0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
 		
 		break;
 	case WM_SIZE:
-		MoveWindow(hEdit, 0, 100, LOWORD(lParam), HIWORD(lParam) - 100, TRUE);
-		MoveWindow(hBtnOn, LOWORD(lParam) / 2 - 100, 0, 100, 50, TRUE);
-		MoveWindow(hBtnOff, LOWORD(lParam) / 2, 0, 100, 50, TRUE);
-		MoveWindow(hBtnClients, LOWORD(lParam) / 2 - 50, 50, 100, 50, TRUE);
+		MoveWindow(hEdit, 0, 50, LOWORD(lParam), HIWORD(lParam) - 50, TRUE);
+		MoveWindow(hBtnClients, LOWORD(lParam) / 2 - 50, 0, 100, 50, TRUE);
 		break;
 	case WM_COMMAND:
 	{
@@ -164,36 +156,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				NULL,    // параметр потока
 				0,                 // not suspended 
 				NULL);      // возврат id потока)
-
-		if (lParam == (LPARAM)hBtnOn)
-		{
-			SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT);
-			if (hSCManager == NULL)
-			{
-				AppendText(hEdit, L"Error: Can't open Manager\n");
-				return 1;
-			}
-			SC_HANDLE hService = OpenServiceA(hSCManager, "CHAT_SERVICE", SERVICE_START);
-			if (hService == NULL)
-			{
-				int error = GetLastError();
-				wchar_t buffer[100];
-				_itow_s(error, buffer, 10);
-				wcscat_s(buffer, L" Error: Can't open Service\n");
-				AppendText(hEdit, buffer);
-				
-				return 1;
-			}
-			if (!StartService(hService, 0, NULL)) {
-				CloseServiceHandle(hSCManager);
-				AppendText(hEdit,L"Error: Can't Start service\n");
-				return 1;
-			}
-			CloseServiceHandle(hService);
-			CloseServiceHandle(hSCManager);
-			AppendText(hEdit,L"Server Start\n");
-			return 0;
-		}
 		// Разобрать выбор в меню:
 		switch (LOWORD(wParam))
 		{
@@ -257,8 +219,8 @@ void Pipes()
 	while (1)
 	{
 		hPipe = CreateFile(
-			pipename,   // Имя канала 
-			GENERIC_READ |  // доступ к файлу
+			pipename,		// channel name
+			GENERIC_READ |  // access the file
 			GENERIC_WRITE,
 			0,              // no sharing 
 			NULL,           // default security attributes
@@ -273,7 +235,7 @@ void Pipes()
 		// Не удалось открыть канал
 		if (GetLastError() != ERROR_PIPE_BUSY)
 		{
-			SetWindowText(hEdit, L"Не удалось открыть канал\n");
+			SetWindowText(hEdit, L"The channel could not be opened\n");
 			return;
 		}
 
@@ -288,13 +250,13 @@ void Pipes()
 	// Конектимся к нашему каналу.
 	dwMode = PIPE_READMODE_MESSAGE;
 	fSuccess = SetNamedPipeHandleState(
-		hPipe,    // имя канала
+		hPipe,    // channel name
 		&dwMode,  // new pipe mode 
 		NULL,     // don't set maximum bytes 
 		NULL);    // don't set maximum time 
 	if (!fSuccess)
 	{
-		SetWindowText(hEdit, L"SetNamedPipeHandleState failed. GLE=%d\n");
+		SetWindowText(hEdit, L"SetNamedPipeHandleState failed.\n");
 		return;
 	}
 
@@ -320,7 +282,7 @@ void Pipes()
 		char buffer[1000] = "";
 		//Чтение ответа от сервера
 		fSuccess = ReadFile(
-			hPipe,    //  имя канала
+			hPipe,    //  channel name
 			buffer,    // buffer to receive reply 
 			1000 * sizeof(char),  // size of buffer 
 			&cbRead,  // number of bytes read 
@@ -330,7 +292,7 @@ void Pipes()
 
 		if (!fSuccess)
 		{
-			SetWindowText(hEdit, L"Чтение файла не удалось\n");
+			SetWindowText(hEdit, L"File reading failed\n");
 			return;
 		}
 
@@ -345,7 +307,7 @@ void Pipes()
 
 
 
-		SetWindowText(hEdit, L"connect clients:\n");
+		SetWindowText(hEdit, L"connect clients:\r\n");
 
 		char* next_token = nullptr;
 		char* pch = strtok_s(buffer, "\n", &next_token); // во втором параметре указаны разделитель (пробел, запятая, точка, тире)

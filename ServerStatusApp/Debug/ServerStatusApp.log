@@ -1,4 +1,1 @@
-﻿  ServerStatusApp.cpp
-G:\project\ServerStatusApp\ServerStatusApp\ServerStatusApp.cpp(253,17): warning C4101:  cbToWrite: неиспользованная локальная переменная
-G:\project\ServerStatusApp\ServerStatusApp\ServerStatusApp.cpp(253,28): warning C4101:  cbWritten: неиспользованная локальная переменная
-  ServerStatusApp.vcxproj -> G:\project\ServerStatusApp\Debug\ServerStatusApp.exe
+﻿  ServerStatusApp.vcxproj -> G:\project\ServerStatusApp\Debug\ServerStatusApp.exe
